@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import csv
 
 class LeastSquares:
-    def __init__(self, constant=False, pow_2_factors = None):
+    def __init__(self, constant=False, pow_2_factors = []):
         self.constant = constant
         self.pow_2_factors = pow_2_factors
         pass
@@ -27,38 +27,38 @@ class LeastSquares:
         Returns
         -------
         self : returns an instance of self.
+        B: returns weights for model
         '''
         self.X=X
         self.y=y
-        if self.constant:
-            X = self.add_constant(X)
+        # implement kernel tricks
         for factor in self.pow_2_factors:
-            X = self.add_squared(X, factor)
-        C = np.dot(np.transpose(X), X)
+            self.X = self.add_squared(self.X, factor)
+        if self.constant:
+            self.X = self.add_constant(self.X)
+        
+        C = np.dot(np.transpose(self.X), self.X)
         G = np.linalg.inv(C)
 
-        self.B = np.dot(np.dot(G, np.transpose(X)),y)
+        self.B = np.dot(np.dot(G, np.transpose(self.X)),y)
+        return self.B
 
     def predict(self, X):
         '''
         Predicts outputs based on X and model
         '''
-        Y = []
-        if isinstance(X[0], list):
-            y = 0
-            for line in X:
-                for i, x in enumerate(line):
-                    y = y + x*self.B[i]
-            Y.append(y)
-        else:
-            Y = [x*self.B[0] for x in X]
+        # implement kernel tricks
+        for factor in self.pow_2_factors:
+            X = self.add_squared(X, factor)
+        if self.constant:
+            X = self.add_constant(X)
+        # Actual prediction
+        Y = np.dot(X, self.B)
         return Y
 
     def solve_(self, X, y):
-        
         C = np.dot(np.transpose(X),X)
         G = np.linalg.inv(C)
-
         B = np.dot(np.dot(G, np.transpose(X)),y)
         return B
 
@@ -75,26 +75,22 @@ class LeastSquares:
         '''
         Adds square of factor to matrix X
         '''
-        print(X[0])
         if isinstance(X[0], list):
-            return [[float(k) for k in x[:]] + x[factor]**2 for x in X]
+            return [x + [x[factor]**2] for x in X]
         else:
             return [[x, x**2] for x in X]
         
-def plot_errors(Y_True, Y_pred):
-    E = []
-    assert(Y_pred == Y_pred)
-    for i, _ in enumerate(Y_True):
-        E.append(Y_True[i]-Y_pred[i])
+def plot_errors(Y_true, Y_pred):
+    Y_true = np.array(Y_true)
+    Y_pred = np.array(Y_pred)
+    E = Y_true-Y_pred
     plt.figure()
-    plt.scatter(x = Y_True, y=E)
+    plt.scatter(x = Y_true, y=E)
     plt.show()
-    return E
-
+    
 def solve(X, y):
     C = np.dot(np.transpose(X),X)
     G = np.linalg.inv(C)
-
     B = np.dot(np.dot(G, np.transpose(X)),y)
     return B
 
@@ -111,20 +107,6 @@ def generate_data(X, Y, ratio = 0.9):
     test_target = [corpus[i][1] for i in range(train_amount, len(corpus))]
     test_data = [corpus[i][0] for i in range(train_amount, len(corpus))]
     return train_data, train_target, test_data, test_target
-
-
-def show(X, Y, B, dims=[1]):
-    for dim in dims:
-        # Warning! It works only for 1D of x
-        plt.figure()
-        # show train data first 
-        plt.scatter(X[:,dim], y=Y)
-        # then plot prediction line
-        X_line, Y_line = X[:, 1], np.dot(X,B)
-        xs = [X_line[0], X_line[-1]]
-        ys = [Y_line[0], Y_line[-1]]
-        plt.plot(xs, ys)
-        plt.show()
 
 def normalize(X):
     # count max
@@ -158,16 +140,3 @@ if __name__ == "__main__":
     clf.fit(train_data, train_target)
     
     plot_errors(test_target, clf.predict(test_data))
-
-    '''
-    features, titles = open_csv("car_price/data.csv", delimiter=';')
-    X = [[1.] + [float(k) for k in x[:5]] + [float(x[1])**2] for x in features]  # + [float(x[7])]
-    Y = [float(x[-1]) for x in features]
-
-    train_data, train_target, test_data, test_target = generate_data(X, Y)
-
-    clf = LeastSquares()
-    clf.fit(train_data, train_target)
-    
-    plot_errors(test_target, clf.predict(test_data))
-    '''
