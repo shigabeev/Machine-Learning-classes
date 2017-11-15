@@ -1,19 +1,45 @@
 # Neural networks
-There are materials for «special math» classes.
-Everything's done in jupyter notebook.
+There are materials for «special math» classes in NUST MISiS.
+Production code located in .py files.
+All the research is inside jupyter notebooks.
 ## Least squares
-First task was to implement least squares algorithm.
+First task was to implement least squares regression.
 
 ![least squares](https://sun9-8.userapi.com/c639325/v639325010/5c519/_xCjDq7F7nQ.jpg)
 
-Data generated as a function y = 2x+5+E.
+### Usage:
+To run sample and see what it does, run following 
      
     $ python3 least_squares.py
+    
+In order to use it as a black box, add python file to your working directory and import it.
+
+    import least_squares as ls
+Now you can fit/predict it as usual.
+
+    ols = ls.LeastSquares(constant = True)
+    ols.fit(X, y)
+    ols.predict(x)
 ## Perceptron
-At this moment only basic implementation without back propagation.
-Though it works well as feed-forward network.
-Running this 
+Second task was to implement Perceptron.
+Perceptron has one hidden layer and sigmoid activation function.
+Weights adjust automatically, using back-propagation.
+### Usage
+Running
 
     $ python3 perceptron.py
-Will provide basic neural network for XOR classification.
-![XOR perceptron](https://pp.userapi.com/c841022/v841022538/3f0b2/2r8-weqH6-E.jpg)
+Will show you how it performs on iris dataset.
+
+To use it in your project:
+
+1.clone it
+    
+    $ curl -o perceptron.py https://github.com/shigabeev/neural_networks/blob/master/perceptron.py
+2.import
+
+    import perceptron
+3.fit/ predict
+    
+    clf = perceptron.Perceptron()
+    clf.fit(X, y)
+    clf.predict(x)
