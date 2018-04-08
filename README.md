@@ -1,7 +1,9 @@
-# Neural networks
-There are materials for «special math» classes in NUST MISiS.
+# Machine Learning
+There are materials for «Machine Learning» classes in NUST MISiS.
 Production code located in .py files.
 All the research is inside jupyter notebooks.
+
+
 ## Least squares
 First task was to implement least squares regression.
 
@@ -43,3 +45,6 @@ To use it in your project:
     clf = perceptron.Perceptron()
     clf.fit(X, y)
     clf.predict(x)
+
+## Other
+There are also notebooks about SVM, LinReg, Booting algorithms and even PCA. All the code was written "as fast as possible" to pass an exam, so there were no refactoring.
